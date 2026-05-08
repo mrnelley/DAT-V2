@@ -15,7 +15,7 @@ import {
 import DashboardOutlined from '@mui/icons-material/DashboardOutlined';
 import TrendingUp from '@mui/icons-material/TrendingUp';
 import Groups from '@mui/icons-material/Groups';
-import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleOutlined from '@mui/icons-material/CheckCircleOutlined';
 import BarChart from '@mui/icons-material/BarChart';
 import SchoolOutlined from '@mui/icons-material/SchoolOutlined';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -41,7 +41,7 @@ const NAV_ITEMS = [
   { key: 'dashboards', label: 'Dashboards', icon: DashboardOutlined, kind: 'submenu' },
   { key: 'priorities', label: 'Priorities', icon: TrendingUp, kind: 'route', path: '/priorities' },
   { key: 'huddles', label: 'Huddles', icon: Groups, kind: 'popout' },
-  { key: 'action-items', label: 'Action Items', icon: CheckCircleOutline, kind: 'route', path: '/action-items' },
+  { key: 'action-items', label: 'Action Items', icon: CheckCircleOutlined, kind: 'route', path: '/action-items' },
   { key: 'metrics', label: 'Metrics', icon: BarChart, kind: 'route', path: '/metrics' },
   { key: 'learn', label: 'Learn', icon: SchoolOutlined, kind: 'route', path: '/learn' },
 ];

@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
-import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlined from '@mui/icons-material/AddCircleOutlined';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import { motion } from 'framer-motion';
 import useAuth from '../../hooks/useAuth';
@@ -141,7 +141,7 @@ export default function TopBar({ onToggleSideNav }) {
 
         <Tooltip title="Quick add">
           <IconButton color="inherit" sx={{ ml: 1 }}>
-            <AddCircleOutline />
+            <AddCircleOutlined />
           </IconButton>
         </Tooltip>
 
