@@ -5,6 +5,7 @@ import theme from './theme';
 import queryClient from './store/queryClient';
 import { AuthProvider } from './hooks/useAuth';
 import { SnackbarProvider } from './components/shared/GlobalSnackbar';
+import { CalendarDialogProvider } from './components/shared/CalendarDialogProvider';
 import AppShell from './components/layout/AppShell';
 import DashboardPage from './components/dashboard/DashboardPage';
 import PrioritiesPage from './components/priorities/PrioritiesPage';
@@ -27,6 +28,7 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <SnackbarProvider>
+            <CalendarDialogProvider>
             <BrowserRouter>
               <Routes>
                 <Route element={<AppShell />}>
@@ -55,6 +57,7 @@ export default function App() {
                 </Route>
               </Routes>
             </BrowserRouter>
+            </CalendarDialogProvider>
           </SnackbarProvider>
         </AuthProvider>
       </QueryClientProvider>
