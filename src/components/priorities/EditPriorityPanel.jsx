@@ -16,10 +16,12 @@ import {
 } from '@mui/material';
 import Close from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
-import { MEASUREMENT, PRIORITY_STATUS } from '../../api/priorities';
+import { MEASUREMENT, PRIORITY_STATUS, TIME_SCOPE, TIME_SCOPE_LABEL } from '../../api/priorities';
 import { PROPERTY_OPTIONS } from '../../utils/calendarTokens';
 import dayjs from 'dayjs';
 import { toLocalInput, fromLocalInput } from '../../utils/formatters';
+import { useWorkplans } from '../../hooks/useWorkplans';
+import { useInitiatives } from '../../hooks/useInitiatives';
 
 const STATUS_OPTIONS = [
   { value: PRIORITY_STATUS.ON_TRACK, label: 'On Track' },
@@ -39,17 +41,30 @@ const emptyDraft = {
   isCompany: false,
   isMine: true,
   teamId: 'org_wide',
+  workplanId: '',
+  initiativeId: '',
+  timeScope: TIME_SCOPE.WEEK,
   dueAt: dayjs().add(30, 'day').toISOString(),
 };
 
-export default function EditPriorityPanel({ open, mode = 'create', priority, onClose, onSubmit }) {
+export default function EditPriorityPanel({ open, mode = 'create', priority, presetWorkplanId, onClose, onSubmit }) {
   const [draft, setDraft] = useState(emptyDraft);
+  const initiativesQ = useInitiatives();
+  const workplansQ = useWorkplans();
 
   useEffect(() => {
     if (open) {
-      setDraft({ ...emptyDraft, ...(priority ?? {}) });
+      const base = priority
+        ? { ...emptyDraft, ...priority, workplanId: priority.workplanId ?? '', initiativeId: priority.initiativeId ?? '' }
+        : { ...emptyDraft, workplanId: presetWorkplanId ?? '' };
+      // Auto-fill initiativeId from workplan if available
+      if (base.workplanId && !base.initiativeId) {
+        const wp = (workplansQ.data ?? []).find((w) => w.id === base.workplanId);
+        if (wp?.initiativeId) base.initiativeId = wp.initiativeId;
+      }
+      setDraft(base);
     }
-  }, [open, priority]);
+  }, [open, priority, presetWorkplanId, workplansQ.data]);
 
   const set = (patch) => setDraft((d) => ({ ...d, ...patch }));
 
@@ -170,6 +185,59 @@ export default function EditPriorityPanel({ open, mode = 'create', priority, onC
                 </MenuItem>
               ))}
             </TextField>
+          </Box>
+
+          <Divider textAlign="left">
+            <Typography variant="overline" sx={{ color: 'text.secondary' }}>
+              Roll up to
+            </Typography>
+          </Divider>
+
+          <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: '1fr 1fr' }}>
+            <TextField
+              select
+              label="Parent Workplan"
+              value={draft.workplanId ?? ''}
+              onChange={(e) => {
+                const wpId = e.target.value;
+                const wp = (workplansQ.data ?? []).find((w) => w.id === wpId);
+                set({ workplanId: wpId, initiativeId: wp?.initiativeId ?? draft.initiativeId });
+              }}
+              helperText="Links this priority into a departmental workplan."
+            >
+              <MenuItem value="">—</MenuItem>
+              {(workplansQ.data ?? []).map((w) => (
+                <MenuItem key={w.id} value={w.id}>{w.title}</MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              select
+              label="Quarterly Initiative"
+              value={draft.initiativeId ?? ''}
+              onChange={(e) => set({ initiativeId: e.target.value })}
+              helperText="Auto-fills from workplan; override if needed."
+            >
+              <MenuItem value="">—</MenuItem>
+              {(initiativesQ.data ?? []).map((i) => (
+                <MenuItem key={i.id} value={i.id}>{i.title}</MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
+          <Box>
+            <Typography variant="caption" sx={{ color: 'text.secondary', mb: 0.75, display: 'block' }}>
+              Time scope
+            </Typography>
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={draft.timeScope ?? TIME_SCOPE.WEEK}
+              onChange={(_e, v) => v && set({ timeScope: v })}
+            >
+              <ToggleButton value={TIME_SCOPE.WEEK}>{TIME_SCOPE_LABEL.week}</ToggleButton>
+              <ToggleButton value={TIME_SCOPE.MONTH}>{TIME_SCOPE_LABEL.month}</ToggleButton>
+              <ToggleButton value={TIME_SCOPE.QUARTER}>{TIME_SCOPE_LABEL.quarter}</ToggleButton>
+            </ToggleButtonGroup>
           </Box>
 
           <TextField

@@ -19,19 +19,38 @@ import MoreHorizOutlined from '@mui/icons-material/MoreHorizOutlined';
 import EditOutlined from '@mui/icons-material/EditOutlined';
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 import ExpandMoreOutlined from '@mui/icons-material/ExpandMoreOutlined';
+import AccountTreeOutlined from '@mui/icons-material/AccountTreeOutlined';
 import { motion } from 'framer-motion';
+import { Link as RouterLink } from 'react-router-dom';
 import UserAvatar from '../shared/UserAvatar';
 import AddToCalendarButton from '../shared/AddToCalendarButton';
 import PriorityHeatmap from './PriorityHeatmap';
-import { calculatePercent, MEASUREMENT, PRIORITY_STATUS } from '../../api/priorities';
+import { calculatePercent, MEASUREMENT, PRIORITY_STATUS, TIME_SCOPE_LABEL } from '../../api/priorities';
 import { priorityToSeed } from '../../utils/calendarSeeds';
 import { formatRelative } from '../../utils/formatters';
+import { useWorkplans } from '../../hooks/useWorkplans';
+import { useInitiatives } from '../../hooks/useInitiatives';
 
+// Brand status palette — used for left-rail accents and progress-bar fills.
+// These are decorative/structural colors; do not use directly as TEXT on white.
 const STATUS_TO_COLOR = {
   [PRIORITY_STATUS.ON_TRACK]: '#006e5c',
   [PRIORITY_STATUS.AT_RISK]: '#f1ac49',
   [PRIORITY_STATUS.OFF_TRACK]: '#db534c',
 };
+
+// Accessible (WCAG AA, 4.5:1+ vs white) text variants of each status color.
+// Use these whenever a status color needs to render as readable text.
+const STATUS_TO_TEXT = {
+  [PRIORITY_STATUS.ON_TRACK]: '#004d40',  // 9.0:1
+  [PRIORITY_STATUS.AT_RISK]:  '#8a5a14',  // 7.6:1
+  [PRIORITY_STATUS.OFF_TRACK]:'#8a2b27',  // 7.4:1
+};
+
+// Accessible dark teal used for "MY PRIORITY" chip + workplan breadcrumb chip.
+// secondary.dark (#3d9585) renders ~3.4:1 on the brand soft-teal tint, which
+// fails AA. #1f5147 hits 8.0:1 on the same tint.
+const ACCESSIBLE_TEAL = '#1f5147';
 
 const MEASUREMENT_LABEL = {
   [MEASUREMENT.NUMBER]: { label: 'NUMBER', color: 'primary' },
@@ -46,8 +65,15 @@ export default function PriorityRow({ priority, onEdit, onDelete }) {
 
   const pct = calculatePercent(priority);
   const statusColor = STATUS_TO_COLOR[priority.status] ?? '#5a6475';
+  const statusTextColor = STATUS_TO_TEXT[priority.status] ?? '#3f4a5c';
   const measurement = MEASUREMENT_LABEL[priority.measurement] ?? { label: priority.measurement?.toUpperCase(), color: 'default' };
   const seed = priorityToSeed(priority);
+  const workplansQ = useWorkplans();
+  const initiativesQ = useInitiatives();
+  const parentWorkplan = (workplansQ.data ?? []).find((w) => w.id === priority.workplanId);
+  const parentInitiative = (initiativesQ.data ?? []).find(
+    (i) => i.id === priority.initiativeId || (parentWorkplan && i.id === parentWorkplan.initiativeId),
+  );
 
   return (
     <Card
@@ -82,10 +108,60 @@ export default function PriorityRow({ priority, onEdit, onDelete }) {
                     <Chip
                       label="MY PRIORITY"
                       size="small"
-                      sx={{ bgcolor: 'rgba(94,184,168,0.18)', color: 'secondary.dark' }}
+                      sx={{ bgcolor: 'rgba(94,184,168,0.22)', color: ACCESSIBLE_TEAL, fontWeight: 700 }}
+                    />
+                  )}
+                  {priority.timeScope && (
+                    <Chip
+                      label={TIME_SCOPE_LABEL[priority.timeScope]}
+                      size="small"
+                      variant="outlined"
+                      sx={{ borderColor: ACCESSIBLE_TEAL, color: ACCESSIBLE_TEAL, fontWeight: 700 }}
                     />
                   )}
                 </Stack>
+                {(parentWorkplan || parentInitiative) && (
+                  <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mb: 0.5, flexWrap: 'wrap' }}>
+                    <AccountTreeOutlined sx={{ fontSize: 14, color: 'text.secondary' }} />
+                    {parentInitiative && (
+                      <Chip
+                        component={RouterLink}
+                        to={`/initiatives/${parentInitiative.id}`}
+                        clickable
+                        onClick={(e) => e.stopPropagation()}
+                        size="small"
+                        label={parentInitiative.title}
+                        sx={{
+                          bgcolor: 'rgba(7,44,94,0.06)',
+                          textTransform: 'none',
+                          maxWidth: 240,
+                          '& .MuiChip-label': { textOverflow: 'ellipsis', overflow: 'hidden' },
+                        }}
+                      />
+                    )}
+                    {parentWorkplan && (
+                      <>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>→</Typography>
+                        <Chip
+                          component={RouterLink}
+                          to={`/workplans/${parentWorkplan.id}`}
+                          clickable
+                          onClick={(e) => e.stopPropagation()}
+                          size="small"
+                          label={parentWorkplan.title}
+                          sx={{
+                            bgcolor: 'rgba(94,184,168,0.18)',
+                            color: ACCESSIBLE_TEAL,
+                            fontWeight: 700,
+                            textTransform: 'none',
+                            maxWidth: 240,
+                            '& .MuiChip-label': { textOverflow: 'ellipsis', overflow: 'hidden' },
+                          }}
+                        />
+                      </>
+                    )}
+                  </Stack>
+                )}
                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                   {priority.owner?.name} · Due {formatRelative(priority.dueAt)}
                 </Typography>
@@ -122,7 +198,15 @@ export default function PriorityRow({ priority, onEdit, onDelete }) {
                   </Typography>
                 </Stack>
               </Box>
-              <Typography variant="h4" sx={{ color: statusColor, minWidth: 48, textAlign: 'right' }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  color: statusTextColor,
+                  minWidth: 48,
+                  textAlign: 'right',
+                  fontWeight: 700,
+                }}
+              >
                 {pct}%
               </Typography>
               <Tooltip title="Add to Calendar">

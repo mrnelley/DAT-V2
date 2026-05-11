@@ -10,9 +10,9 @@ const wait = (ms = 120) => new Promise((r) => setTimeout(r, ms));
 const newId = () => `cal_${Math.random().toString(36).slice(2, 10)}`;
 
 const STUB_OWNER = {
-  id: 'stub-user',
-  name: 'Parnell Kelley',
-  initials: 'PK',
+  id: 'usr_dana',
+  name: 'Dana Hanchin',
+  initials: 'DH',
 };
 
 const today = dayjs();

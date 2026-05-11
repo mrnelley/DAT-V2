@@ -1,24 +1,43 @@
-import { createContext, useContext, useMemo } from 'react';
-import { ROLES } from '../utils/permissions';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { DEFAULT_USER_ID, USERS, getUser } from '../api/users';
 
-// Stub auth context. Replace with MSAL / Microsoft Entra ID integration.
 const AuthContext = createContext(null);
 
-const STUB_USER = {
-  id: 'stub-user',
-  name: 'Parnell Kelley',
-  email: 'parnell@hdc.local',
-  initials: 'PK',
-  photoUrl: null,
-  organization: 'HDC',
-  roles: [ROLES.ELT, ROLES.LEADER, ROLES.MEMBER],
-};
+const STORAGE_KEY = 'hdc_compass.activeUserId';
+
+function readStoredUserId() {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) || DEFAULT_USER_ID;
+  } catch {
+    return DEFAULT_USER_ID;
+  }
+}
 
 export function AuthProvider({ children }) {
-  const value = useMemo(
-    () => ({ user: STUB_USER, isAuthenticated: true }),
-    [],
-  );
+  const [userId, setUserId] = useState(readStoredUserId);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, userId);
+    } catch {
+      /* no-op */
+    }
+  }, [userId]);
+
+  const switchUser = useCallback((nextId) => {
+    setUserId(nextId);
+  }, []);
+
+  const value = useMemo(() => {
+    const user = getUser(userId);
+    return {
+      user,
+      isAuthenticated: true,
+      allUsers: USERS,
+      switchUser,
+    };
+  }, [userId, switchUser]);
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

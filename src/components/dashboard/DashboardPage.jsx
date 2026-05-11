@@ -2,12 +2,38 @@ import { useParams } from 'react-router-dom';
 import { Box, Typography, Stack, Chip } from '@mui/material';
 import PageWrapper from '../layout/PageWrapper';
 import CompassCalendar from '../calendar/CompassCalendar';
+import AdvocacyCockpit from './AdvocacyCockpit';
+import CFOCockpit from './CFOCockpit';
+import RealEstateCockpit from './RealEstateCockpit';
+import PropertyMgmtCockpit from './PropertyMgmtCockpit';
+import HRCockpit from './HRCockpit';
+import ImpactCockpit from './ImpactCockpit';
+import ResidentServicesCockpit from './ResidentServicesCockpit';
 import useAuth from '../../hooks/useAuth';
+import { DASHBOARD_VARIANT } from '../../api/users';
+
+const VARIANT_TO_COCKPIT = {
+  [DASHBOARD_VARIANT.ADVOCACY]: AdvocacyCockpit,
+  [DASHBOARD_VARIANT.CFO]: CFOCockpit,
+  [DASHBOARD_VARIANT.REAL_ESTATE_DEV]: RealEstateCockpit,
+  [DASHBOARD_VARIANT.PROPERTY_MGMT]: PropertyMgmtCockpit,
+  [DASHBOARD_VARIANT.HR]: HRCockpit,
+  [DASHBOARD_VARIANT.IMPACT_ADVANCEMENT]: ImpactCockpit,
+  [DASHBOARD_VARIANT.RESIDENT_SERVICES]: ResidentServicesCockpit,
+};
 
 export default function DashboardPage() {
   const { scope = 'me' } = useParams();
   const isCompany = scope === 'company';
   const { user } = useAuth();
+
+  // /dashboard/me shape depends on user.dashboardVariant.
+  // Each persona gets a role-tailored cockpit; the personal calendar
+  // always lives as the bottom section inside that cockpit.
+  if (!isCompany) {
+    const Cockpit = VARIANT_TO_COCKPIT[user?.dashboardVariant];
+    if (Cockpit) return <Cockpit />;
+  }
 
   return (
     <PageWrapper>

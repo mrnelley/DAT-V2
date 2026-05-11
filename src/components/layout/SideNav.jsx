@@ -17,6 +17,7 @@ import TrendingUp from '@mui/icons-material/TrendingUp';
 import Groups from '@mui/icons-material/Groups';
 import CheckCircleOutlined from '@mui/icons-material/CheckCircleOutlined';
 import BarChart from '@mui/icons-material/BarChart';
+import AccountTreeOutlined from '@mui/icons-material/AccountTreeOutlined';
 import SchoolOutlined from '@mui/icons-material/SchoolOutlined';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ChevronRight from '@mui/icons-material/ChevronRight';
@@ -33,13 +34,15 @@ const COLLAPSED_WIDTH = 64;
 const DASHBOARD_SUBITEMS = [
   { label: 'My Dashboard', path: '/dashboard/me' },
   { label: 'Company Dashboard', path: '/dashboard/company' },
-  { label: 'Annual Initiatives', path: '/initiatives' },
+  { label: 'Quarterly Initiatives', path: '/initiatives' },
+  { label: 'Departmental Workplans', path: '/workplans' },
   { label: 'Data Table', path: '/metrics/table' },
 ];
 
 const NAV_ITEMS = [
   { key: 'dashboards', label: 'Dashboards', icon: DashboardOutlined, kind: 'submenu' },
   { key: 'priorities', label: 'Priorities', icon: TrendingUp, kind: 'route', path: '/priorities' },
+  { key: 'workplans', label: 'Workplans', icon: AccountTreeOutlined, kind: 'route', path: '/workplans' },
   { key: 'huddles', label: 'Huddles', icon: Groups, kind: 'popout' },
   { key: 'action-items', label: 'Action Items', icon: CheckCircleOutlined, kind: 'route', path: '/action-items' },
   { key: 'metrics', label: 'Metrics', icon: BarChart, kind: 'route', path: '/metrics' },

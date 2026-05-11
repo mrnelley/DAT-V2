@@ -17,7 +17,7 @@ import AddCircleOutlined from '@mui/icons-material/AddCircleOutlined';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import { motion } from 'framer-motion';
 import useAuth from '../../hooks/useAuth';
-import UserAvatar from '../shared/UserAvatar';
+import UserSwitcher from './UserSwitcher';
 
 const NAV_BUTTONS = [
   {
@@ -145,27 +145,7 @@ export default function TopBar({ onToggleSideNav }) {
           </IconButton>
         </Tooltip>
 
-        <Tooltip title={user?.name ?? 'User'}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 1 }}>
-            <UserAvatar user={user} size="md" />
-            {!isMobile && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-                <Typography
-                  variant="body2"
-                  sx={{ color: 'common.white', fontWeight: 600 }}
-                >
-                  {user?.name}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{ color: 'rgba(255,255,255,0.7)' }}
-                >
-                  {user?.organization}
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </Tooltip>
+        <UserSwitcher compact={isMobile} />
       </Toolbar>
     </AppBar>
   );
