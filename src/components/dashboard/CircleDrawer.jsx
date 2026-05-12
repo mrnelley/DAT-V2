@@ -83,7 +83,7 @@ export default function CircleDrawer({ circleId, open, onClose }) {
                   </Box>
                   <Stack alignItems="flex-end" spacing={0.25}>
                     <Chip size="small" label={stage.label} sx={{ bgcolor: stage.soft, color: stage.fg }} />
-                    <Typography variant="caption" sx={{ color: overdue ? 'error.main' : 'text.secondary', fontWeight: 600 }}>
+                    <Typography variant="caption" sx={{ color: overdue ? '#8a2b27' : 'text.secondary', fontWeight: 700 }}>
                       {overdue ? `${m.daysSince - m.cadenceDays}d overdue` : `${m.daysSince}d ago`}
                     </Typography>
                   </Stack>

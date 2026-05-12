@@ -34,8 +34,9 @@ import { WORKPLAN_STATUS } from '../../api/workplans';
 import { formatDay } from '../../utils/formatters';
 import TouchpointTimeline from '../touchpoints/TouchpointTimeline';
 import AddToCalendarButton from '../shared/AddToCalendarButton';
+import { generalStatusToBadge, priorityStatusToText } from '../../utils/a11yColors';
 
-const STATUS_COLOR = {
+const STATUS_DECOR = {
   on_track: '#006e5c', at_risk: '#f1ac49', off_track: '#db534c', completed: '#072c5e',
 };
 
@@ -66,7 +67,9 @@ export default function WorkplanDetailPage() {
     () => (prioritiesQ.data ?? []).filter((p) => p.workplanId === id),
     [prioritiesQ.data, id],
   );
-  const color = STATUS_COLOR[wp?.status] ?? '#5a6475';
+  const color = STATUS_DECOR[wp?.status] ?? '#5a6475';
+  const badge = generalStatusToBadge(wp?.status);
+  const textColor = priorityStatusToText(wp?.status);
 
   if (workplanQ.isLoading) {
     return (
@@ -138,7 +141,7 @@ export default function WorkplanDetailPage() {
             <Typography variant="overline" sx={{ color: 'secondary.dark' }}>Departmental Workplan</Typography>
             <Typography variant="h1" sx={{ mb: 1 }}>{wp.title}</Typography>
             <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', mb: 1.5 }}>
-              <Chip size="small" label={STATUS_LABEL[wp.status]} sx={{ bgcolor: color, color: 'common.white' }} />
+              <Chip size="small" label={STATUS_LABEL[wp.status]} sx={{ bgcolor: badge.soft, color: badge.fg, fontWeight: 700 }} />
               <Chip size="small" label={PROPERTY_LABEL[wp.departmentId] ?? wp.departmentId} />
               <Chip size="small" label={`${formatDay(wp.startDate)} → ${formatDay(wp.endDate)}`} />
             </Stack>
@@ -153,7 +156,7 @@ export default function WorkplanDetailPage() {
                 value={wp.rollupPct ?? 0}
                 sx={{ height: 10, borderRadius: 5, bgcolor: 'rgba(7,44,94,0.06)', '& .MuiLinearProgress-bar': { bgcolor: color } }}
               />
-              <Typography variant="caption" sx={{ color, fontWeight: 700, mt: 0.5, display: 'block' }}>
+              <Typography variant="caption" sx={{ color: textColor, fontWeight: 700, mt: 0.5, display: 'block' }}>
                 Rollup: {wp.rollupPct ?? 0}%
               </Typography>
             </Box>

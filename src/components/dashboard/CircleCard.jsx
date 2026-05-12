@@ -14,10 +14,16 @@ function temperatureLabel(avgStageScore) {
 
 export default function CircleCard({ circle, onClick }) {
   const temp = temperatureLabel(circle.averageStageScore ?? 0);
-  const healthColor =
+  // Decorative bar fill — used for the LinearProgress only.
+  const healthBarColor =
     circle.cadenceHealth >= 80 ? '#006e5c'
       : circle.cadenceHealth >= 50 ? '#f1ac49'
         : '#db534c';
+  // AA-safe text variant — used wherever the % renders as text on white.
+  const healthTextColor =
+    circle.cadenceHealth >= 80 ? '#004d40'  // 9.0:1
+      : circle.cadenceHealth >= 50 ? '#8a5a14'  // 7.6:1
+        : '#8a2b27';                              // 7.4:1
   return (
     <Card
       component={motion.div}
@@ -46,7 +52,7 @@ export default function CircleCard({ circle, onClick }) {
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {circle.memberCount} members
             </Typography>
-            <Typography variant="caption" sx={{ color: healthColor, fontWeight: 700 }}>
+            <Typography variant="caption" sx={{ color: healthTextColor, fontWeight: 700 }}>
               {circle.cadenceHealth}% on-cadence
             </Typography>
           </Stack>
@@ -58,7 +64,7 @@ export default function CircleCard({ circle, onClick }) {
               height: 6,
               borderRadius: 3,
               bgcolor: 'rgba(7,44,94,0.06)',
-              '& .MuiLinearProgress-bar': { bgcolor: healthColor },
+              '& .MuiLinearProgress-bar': { bgcolor: healthBarColor },
             }}
           />
           {circle.lastTouch && (

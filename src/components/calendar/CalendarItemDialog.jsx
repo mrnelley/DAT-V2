@@ -154,8 +154,8 @@ export default function CalendarItemDialog({
                   mb: 2.5,
                 }}
               >
-                <LinkOutlined sx={{ color: 'secondary.dark' }} fontSize="small" />
-                <Typography variant="body2" sx={{ color: 'secondary.dark' }}>
+                <LinkOutlined sx={{ color: '#1f5147' }} fontSize="small" />
+                <Typography variant="body2" sx={{ color: '#1f5147' }}>
                   {sourceLabel}:
                 </Typography>
                 <Chip

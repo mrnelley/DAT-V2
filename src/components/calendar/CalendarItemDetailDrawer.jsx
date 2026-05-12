@@ -160,14 +160,14 @@ export default function CalendarItemDetailDrawer({ open, item, onClose }) {
             <Chip
               size="small"
               label="Pending org approval"
-              sx={{ bgcolor: 'rgba(241,172,73,0.18)', color: 'warning.dark', textTransform: 'none' }}
+              sx={{ bgcolor: 'rgba(241,172,73,0.22)', color: '#8a5a14', textTransform: 'none', fontWeight: 700 }}
             />
           )}
           {isRejected && (
             <Chip
               size="small"
               label="Returned"
-              sx={{ bgcolor: 'rgba(219,83,76,0.15)', color: 'error.dark', textTransform: 'none' }}
+              sx={{ bgcolor: 'rgba(219,83,76,0.18)', color: '#8a2b27', textTransform: 'none', fontWeight: 700 }}
             />
           )}
         </Stack>
@@ -207,8 +207,8 @@ export default function CalendarItemDetailDrawer({ open, item, onClose }) {
               mb: 2,
             }}
           >
-            <LinkOutlined fontSize="small" sx={{ color: 'secondary.dark' }} />
-            <Typography variant="body2" sx={{ color: 'secondary.dark' }}>
+            <LinkOutlined fontSize="small" sx={{ color: '#1f5147' }} />
+            <Typography variant="body2" sx={{ color: '#1f5147' }}>
               {sourceLabel}:
             </Typography>
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -227,7 +227,7 @@ export default function CalendarItemDetailDrawer({ open, item, onClose }) {
               mb: 2,
             }}
           >
-            <Typography variant="caption" sx={{ color: 'error.dark', display: 'block', mb: 0.5 }}>
+            <Typography variant="caption" sx={{ color: '#8a2b27', display: 'block', mb: 0.5, fontWeight: 700 }}>
               Note from admin
             </Typography>
             <Typography variant="body2">{item.rejectionReason}</Typography>

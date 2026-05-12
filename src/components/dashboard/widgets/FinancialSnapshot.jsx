@@ -51,9 +51,9 @@ function Tile({ icon, label, headline, sublabel, accent, trend }) {
         {trend != null && (
           <>
             {isUp
-              ? <TrendingUp fontSize="small" sx={{ color: 'success.dark' }} />
-              : <TrendingDown fontSize="small" sx={{ color: 'error.main' }} />}
-            <Typography variant="caption" sx={{ color: isUp ? 'success.dark' : 'error.main', fontWeight: 700 }}>
+              ? <TrendingUp fontSize="small" sx={{ color: '#004d40' }} />
+              : <TrendingDown fontSize="small" sx={{ color: '#8a2b27' }} />}
+            <Typography variant="caption" sx={{ color: isUp ? '#004d40' : '#8a2b27', fontWeight: 700 }}>
               {Math.abs(trend * 100).toFixed(1)}%
             </Typography>
           </>

@@ -47,7 +47,14 @@ const PROPERTIES = [
   },
 ];
 
-const STATUS_COLOR = { on_track: '#006e5c', at_risk: '#f1ac49', off_track: '#db534c' };
+// Decorative — used for borderTop accents + side-list dots. NOT for text.
+const STATUS_DECOR = { on_track: '#006e5c', at_risk: '#f1ac49', off_track: '#db534c' };
+// AA-safe soft+dark pairs for chips (WCAG 2.1 AA / Section 508).
+const STATUS_BADGE = {
+  on_track:  { soft: 'rgba(0, 110, 92, 0.14)',   fg: '#004d40' },
+  at_risk:   { soft: 'rgba(241, 172, 73, 0.22)', fg: '#8a5a14' },
+  off_track: { soft: 'rgba(219, 83, 76, 0.18)',  fg: '#8a2b27' },
+};
 const STATUS_LABEL = { on_track: 'Healthy', at_risk: 'Watch', off_track: 'Critical' };
 
 // Build a colored circle DivIcon — avoids the Leaflet asset-path issue
@@ -138,7 +145,7 @@ function PortfolioSummary({ properties }) {
 function PropertyPanel({ property, linkedPriorities, onClose }) {
   const navigate = useNavigate();
   return (
-    <Box sx={{ p: 2, borderTop: `4px solid ${STATUS_COLOR[property.status]}` }}>
+    <Box sx={{ p: 2, borderTop: `4px solid ${STATUS_DECOR[property.status]}` }}>
       <Stack direction="row" alignItems="flex-start" justifyContent="space-between" sx={{ mb: 1 }}>
         <Box>
           <Typography variant="overline" sx={{ color: 'text.secondary' }}>Selected property</Typography>
@@ -148,7 +155,11 @@ function PropertyPanel({ property, linkedPriorities, onClose }) {
         <Chip
           label={STATUS_LABEL[property.status]}
           size="small"
-          sx={{ bgcolor: STATUS_COLOR[property.status], color: 'common.white', fontWeight: 700 }}
+          sx={{
+            bgcolor: STATUS_BADGE[property.status].soft,
+            color: STATUS_BADGE[property.status].fg,
+            fontWeight: 700,
+          }}
         />
       </Stack>
 
@@ -304,7 +315,7 @@ export default function PropertiesMap() {
                     '&:hover': { bgcolor: 'rgba(94,184,168,0.1)' },
                   }}
                 >
-                  <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: STATUS_COLOR[p.status] }} />
+                  <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: STATUS_DECOR[p.status] }} />
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>{p.name}</Typography>
                     <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>

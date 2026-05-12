@@ -73,7 +73,7 @@ function ProjectCard({ p }) {
             sx={{
               position: 'absolute', top: -6, right: -6,
               width: 18, height: 18, borderRadius: '50%',
-              bgcolor: 'error.main', color: 'common.white',
+              bgcolor: '#a52a1f', color: 'common.white',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 11, fontWeight: 800,
             }}
@@ -131,7 +131,7 @@ export default function DevelopmentPipeline() {
           <Typography variant="h3">{inFlight} projects in flight · {totalUnits} units · ${totalCap.toFixed(1)}M cap stack</Typography>
         </Box>
         <Stack direction="row" spacing={1}>
-          <Chip label={`${critical} on critical path`} sx={{ bgcolor: 'rgba(219,83,76,0.12)', color: 'error.dark', fontWeight: 700 }} />
+          <Chip label={`${critical} on critical path`} sx={{ bgcolor: 'rgba(219,83,76,0.18)', color: '#8a2b27', fontWeight: 700 }} />
         </Stack>
       </Stack>
 

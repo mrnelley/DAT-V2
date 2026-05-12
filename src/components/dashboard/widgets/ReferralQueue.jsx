@@ -13,13 +13,17 @@ const STATS = {
   rscCapacity: 12, // cases per RSC
 };
 
+// Each category has:
+//   color  — decorative (3px borderTop accent only; NOT used as text)
+//   text   — AA-safe text color for the count (≥4.5:1 on white)
+//   fill   — AA-safe filled-chip color (white text passes ≥4.5:1)
 const CATEGORIES = [
-  { id: 'mental_health', label: 'Mental Health', color: '#1a4a80', count: 23, trend: '+3 this wk' },
-  { id: 'food_security', label: 'Food Security', color: '#5eb8a8', count: 18, trend: '+2 this wk' },
-  { id: 'employment', label: 'Employment', color: '#f1ac49', count: 14, trend: 'flat' },
-  { id: 'childcare', label: 'Childcare', color: '#db534c', count: 12, trend: '+2 this wk' },
-  { id: 'legal', label: 'Legal', color: '#5a6475', count: 11, trend: '−1' },
-  { id: 'senior_support', label: 'Senior Support', color: '#006e5c', count: 9, trend: '+1' },
+  { id: 'mental_health',  label: 'Mental Health',  color: '#1a4a80', text: '#1a4a80', fill: '#1a4a80', count: 23, trend: '+3 this wk' },
+  { id: 'food_security',  label: 'Food Security',  color: '#5eb8a8', text: '#1f5147', fill: '#2c6e63', count: 18, trend: '+2 this wk' },
+  { id: 'employment',     label: 'Employment',     color: '#f1ac49', text: '#8a5a14', fill: '#a06a14', count: 14, trend: 'flat' },
+  { id: 'childcare',      label: 'Childcare',      color: '#db534c', text: '#8a2b27', fill: '#a52a1f', count: 12, trend: '+2 this wk' },
+  { id: 'legal',          label: 'Legal',          color: '#5a6475', text: '#3f4a5c', fill: '#3f4a5c', count: 11, trend: '−1' },
+  { id: 'senior_support', label: 'Senior Support', color: '#006e5c', text: '#004d40', fill: '#006e5c', count: 9,  trend: '+1' },
 ];
 
 // PII-light — initials only.
@@ -34,10 +38,12 @@ const REFERRALS = [
   { id: 'r_008', resident: 'S.V.', property: 'Lakeside', category: 'employment', rsc: 'David L.', daysOpen: 7, urgency: 'low', summary: 'Skill-building course enrollment + transit pass.' },
 ];
 
+// Urgency renders as soft+dark badge (AA-safe text color on tinted bg).
+// `dot` is the AA-safe variant used for the row's left rail (3:1 non-text).
 const URGENCY = {
-  high: { color: '#db534c', label: 'High' },
-  medium: { color: '#f1ac49', label: 'Medium' },
-  low: { color: '#5a6475', label: 'Low' },
+  high:   { dot: '#a52a1f', soft: 'rgba(219,83,76,0.18)',  fg: '#8a2b27', label: 'High' },
+  medium: { dot: '#a06a14', soft: 'rgba(241,172,73,0.22)', fg: '#8a5a14', label: 'Medium' },
+  low:    { dot: '#5a6475', soft: 'rgba(90,100,117,0.14)', fg: '#3f4a5c', label: 'Low' },
 };
 
 const CATEGORY_BY_ID = Object.fromEntries(CATEGORIES.map((c) => [c.id, c]));
@@ -101,7 +107,7 @@ export default function ReferralQueue() {
             }}
           >
             <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>{c.label}</Typography>
-            <Typography variant="h3" sx={{ lineHeight: 1.1, color: c.color }}>{c.count}</Typography>
+            <Typography variant="h3" sx={{ lineHeight: 1.1, color: c.text }}>{c.count}</Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>{c.trend}</Typography>
           </Box>
         ))}
@@ -125,7 +131,7 @@ export default function ReferralQueue() {
                 alignItems: 'center', gap: 1.5,
                 p: 1.5, borderRadius: 2,
                 border: '1px solid', borderColor: 'divider',
-                borderLeft: `4px solid ${URGENCY[r.urgency].color}`,
+                borderLeft: `4px solid ${URGENCY[r.urgency].dot}`,
               }}
             >
               <Box sx={{
@@ -140,12 +146,21 @@ export default function ReferralQueue() {
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{r.summary}</Typography>
                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>{r.property} · RSC: {r.rsc}</Typography>
               </Box>
-              <Chip size="small" label={cat.label} sx={{ bgcolor: cat.color, color: 'common.white', justifySelf: 'flex-start' }} />
+              <Chip size="small" label={cat.label} sx={{ bgcolor: cat.fill, color: 'common.white', justifySelf: 'flex-start', fontWeight: 700 }} />
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>Days open</Typography>
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>{r.daysOpen}d</Typography>
               </Box>
-              <Chip size="small" label={URGENCY[r.urgency].label} sx={{ bgcolor: URGENCY[r.urgency].color, color: 'common.white', justifySelf: 'flex-start' }} />
+              <Chip
+                size="small"
+                label={URGENCY[r.urgency].label}
+                sx={{
+                  bgcolor: URGENCY[r.urgency].soft,
+                  color: URGENCY[r.urgency].fg,
+                  justifySelf: 'flex-start',
+                  fontWeight: 700,
+                }}
+              />
             </Box>
           );
         })}

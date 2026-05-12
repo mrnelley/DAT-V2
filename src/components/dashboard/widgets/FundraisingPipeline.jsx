@@ -165,7 +165,11 @@ export default function FundraisingPipeline() {
       <Stack spacing={0.75}>
         {DEADLINES.map((d) => {
           const daysOut = d.date.diff(dayjs(), 'day');
-          const accent = d.urgency === 'high' ? '#db534c' : d.urgency === 'medium' ? '#f1ac49' : '#5a6475';
+          // AA-safe pairs: rail/icon hit 3:1 non-text contrast; chip hits 4.5:1 text contrast.
+          const urgencyMeta =
+            d.urgency === 'high'   ? { rail: '#a52a1f', soft: 'rgba(219,83,76,0.18)',  fg: '#8a2b27' }
+            : d.urgency === 'medium' ? { rail: '#a06a14', soft: 'rgba(241,172,73,0.22)', fg: '#8a5a14' }
+            :                          { rail: '#5a6475', soft: 'rgba(90,100,117,0.14)', fg: '#3f4a5c' };
           return (
             <Box
               key={d.id}
@@ -173,15 +177,19 @@ export default function FundraisingPipeline() {
                 display: 'flex', alignItems: 'center', gap: 1.5,
                 p: 1.25, borderRadius: 2,
                 border: '1px solid', borderColor: 'divider',
-                borderLeft: `4px solid ${accent}`,
+                borderLeft: `4px solid ${urgencyMeta.rail}`,
               }}
             >
-              <EventNoteOutlined sx={{ color: accent }} />
+              <EventNoteOutlined sx={{ color: urgencyMeta.rail }} />
               <Box sx={{ flex: 1 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>{d.label}</Typography>
                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>{d.date.format('MMM D, YYYY')}</Typography>
               </Box>
-              <Chip size="small" label={`${daysOut}d`} sx={{ bgcolor: accent, color: 'common.white', fontWeight: 700 }} />
+              <Chip
+                size="small"
+                label={`${daysOut}d`}
+                sx={{ bgcolor: urgencyMeta.soft, color: urgencyMeta.fg, fontWeight: 700 }}
+              />
             </Box>
           );
         })}

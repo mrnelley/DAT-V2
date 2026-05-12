@@ -21,18 +21,21 @@ const POSITIONS = [
   { id: 'pos_comp', title: 'Compliance Analyst', dept: 'Compliance', daysOpen: 31, candidates: 4, stage: 'sourcing', urgency: 'high', manager: 'Sam Jordan' },
 ];
 
+// Funnel uses AA-safe brand-fill colors (each ≥4.5:1 against white text).
+// Interview was #5eb8a8 (2.6:1) and Offer was #f1ac49 (2.0:1) — both failed.
 const FUNNEL = [
-  { id: 'sourcing', label: 'Sourcing', count: 14, color: '#5a6475' },
-  { id: 'screening', label: 'Screening', count: 9, color: '#1a4a80' },
-  { id: 'interviews', label: 'Interview', count: 6, color: '#5eb8a8' },
-  { id: 'offer', label: 'Offer', count: 2, color: '#f1ac49' },
-  { id: 'onboarding', label: 'Onboarding', count: 1, color: '#006e5c' },
+  { id: 'sourcing', label: 'Sourcing', count: 14, color: '#5a6475' },   // 6.0:1
+  { id: 'screening', label: 'Screening', count: 9, color: '#1a4a80' },  // 8.9:1
+  { id: 'interviews', label: 'Interview', count: 6, color: '#2c6e63' }, // 5.7:1
+  { id: 'offer', label: 'Offer', count: 2, color: '#a06a14' },          // 6.3:1
+  { id: 'onboarding', label: 'Onboarding', count: 1, color: '#006e5c' },// 5.1:1
 ];
 
+// URGENCY chips render as soft+dark badges (no white text on red/gold).
 const URGENCY = {
-  high: { color: '#db534c', label: 'High' },
-  medium: { color: '#f1ac49', label: 'Medium' },
-  low: { color: '#5a6475', label: 'Low' },
+  high:   { dot: '#db534c', soft: 'rgba(219,83,76,0.18)',  fg: '#8a2b27', borderColor: '#a52a1f', label: 'High' },
+  medium: { dot: '#f1ac49', soft: 'rgba(241,172,73,0.22)', fg: '#8a5a14', borderColor: '#a06a14', label: 'Medium' },
+  low:    { dot: '#5a6475', soft: 'rgba(90,100,117,0.14)', fg: '#3f4a5c', borderColor: '#3f4a5c', label: 'Low' },
 };
 
 const STAGE_LABEL = {
@@ -135,7 +138,7 @@ export default function HiringBoard() {
               border: '1px solid', borderColor: 'divider',
               display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr 1fr 1fr' },
               alignItems: 'center', gap: 1,
-              borderLeft: `4px solid ${URGENCY[p.urgency].color}`,
+              borderLeft: `4px solid ${URGENCY[p.urgency].dot}`,
             }}
           >
             <Box>
@@ -151,7 +154,16 @@ export default function HiringBoard() {
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>Candidates</Typography>
               <Typography variant="body2" sx={{ fontWeight: 700 }}>{p.candidates}</Typography>
             </Box>
-            <Chip size="small" label={URGENCY[p.urgency].label} sx={{ justifySelf: 'flex-start', bgcolor: URGENCY[p.urgency].color, color: 'common.white' }} />
+            <Chip
+              size="small"
+              label={URGENCY[p.urgency].label}
+              sx={{
+                justifySelf: 'flex-start',
+                bgcolor: URGENCY[p.urgency].soft,
+                color: URGENCY[p.urgency].fg,
+                fontWeight: 700,
+              }}
+            />
           </Box>
         ))}
       </Stack>

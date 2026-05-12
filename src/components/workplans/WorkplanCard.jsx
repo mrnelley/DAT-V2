@@ -63,7 +63,7 @@ export default function WorkplanCard({ workplan, initiativeTitle, onEdit, onDele
               />
               <Stack direction="row" justifyContent="space-between" sx={{ mt: 0.5 }}>
                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>Owner: {workplan.owner?.name}</Typography>
-                <Typography variant="caption" sx={{ color, fontWeight: 700 }}>{workplan.rollupPct ?? 0}%</Typography>
+                <Typography variant="caption" sx={{ color: textColor, fontWeight: 700 }}>{workplan.rollupPct ?? 0}%</Typography>
               </Stack>
             </Box>
             <Stack direction="column" spacing={0.5} alignItems="center">

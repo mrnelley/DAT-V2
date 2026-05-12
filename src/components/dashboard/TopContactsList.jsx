@@ -54,7 +54,7 @@ export default function TopContactsList({ limit = 6 }) {
               </Box>
               <Stack alignItems="flex-end" spacing={0.25}>
                 <Chip size="small" label={stage.label} sx={{ bgcolor: stage.soft, color: stage.fg }} />
-                <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 700 }}>
+                <Typography variant="caption" sx={{ color: '#8a2b27', fontWeight: 700 }}>
                   {daysOver}d overdue
                 </Typography>
               </Stack>
