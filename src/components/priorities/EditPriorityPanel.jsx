@@ -22,6 +22,7 @@ import dayjs from 'dayjs';
 import { toLocalInput, fromLocalInput } from '../../utils/formatters';
 import { useWorkplans } from '../../hooks/useWorkplans';
 import { useInitiatives } from '../../hooks/useInitiatives';
+import { useProperties } from '../../hooks/useProperties';
 
 const STATUS_OPTIONS = [
   { value: PRIORITY_STATUS.ON_TRACK, label: 'On Track' },
@@ -43,6 +44,7 @@ const emptyDraft = {
   teamId: 'org_wide',
   workplanId: '',
   initiativeId: '',
+  propertyId: '',           // OPTIONAL — link this priority to a specific property
   timeScope: TIME_SCOPE.WEEK,
   dueAt: dayjs().add(30, 'day').toISOString(),
 };
@@ -51,11 +53,17 @@ export default function EditPriorityPanel({ open, mode = 'create', priority, pre
   const [draft, setDraft] = useState(emptyDraft);
   const initiativesQ = useInitiatives();
   const workplansQ = useWorkplans();
+  const propertiesQ = useProperties();
 
   useEffect(() => {
     if (open) {
       const base = priority
-        ? { ...emptyDraft, ...priority, workplanId: priority.workplanId ?? '', initiativeId: priority.initiativeId ?? '' }
+        ? {
+            ...emptyDraft, ...priority,
+            workplanId: priority.workplanId ?? '',
+            initiativeId: priority.initiativeId ?? '',
+            propertyId: priority.propertyId ?? '',
+          }
         : { ...emptyDraft, workplanId: presetWorkplanId ?? '' };
       // Auto-fill initiativeId from workplan if available
       if (base.workplanId && !base.initiativeId) {
@@ -223,6 +231,21 @@ export default function EditPriorityPanel({ open, mode = 'create', priority, pre
               ))}
             </TextField>
           </Box>
+
+          <TextField
+            select
+            label="Link to property (optional)"
+            value={draft.propertyId ?? ''}
+            onChange={(e) => set({ propertyId: e.target.value })}
+            helperText="Leave blank if this priority isn't tied to a single community."
+          >
+            <MenuItem value="">— Portfolio-wide / not property-specific</MenuItem>
+            {(propertiesQ.data ?? []).map((p) => (
+              <MenuItem key={p.id} value={p.id}>
+                {p.name} · {p.city ? `${p.city}, ${p.state}` : p.state}
+              </MenuItem>
+            ))}
+          </TextField>
 
           <Box>
             <Typography variant="caption" sx={{ color: 'text.secondary', mb: 0.75, display: 'block' }}>

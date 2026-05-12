@@ -30,6 +30,8 @@ import { priorityToSeed } from '../../utils/calendarSeeds';
 import { formatRelative } from '../../utils/formatters';
 import { useWorkplans } from '../../hooks/useWorkplans';
 import { useInitiatives } from '../../hooks/useInitiatives';
+import { useProperties } from '../../hooks/useProperties';
+import LocationOnOutlined from '@mui/icons-material/LocationOnOutlined';
 
 // Brand status palette — used for left-rail accents and progress-bar fills.
 // These are decorative/structural colors; do not use directly as TEXT on white.
@@ -70,10 +72,15 @@ export default function PriorityRow({ priority, onEdit, onDelete }) {
   const seed = priorityToSeed(priority);
   const workplansQ = useWorkplans();
   const initiativesQ = useInitiatives();
+  const propertiesQ = useProperties();
   const parentWorkplan = (workplansQ.data ?? []).find((w) => w.id === priority.workplanId);
   const parentInitiative = (initiativesQ.data ?? []).find(
     (i) => i.id === priority.initiativeId || (parentWorkplan && i.id === parentWorkplan.initiativeId),
   );
+  // Optional property link — surfaces as a chip when set.
+  const linkedProperty = priority.propertyId
+    ? (propertiesQ.data ?? []).find((p) => p.id === priority.propertyId)
+    : null;
 
   return (
     <Card
@@ -120,6 +127,24 @@ export default function PriorityRow({ priority, onEdit, onDelete }) {
                     />
                   )}
                 </Stack>
+                {linkedProperty && (
+                  <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mb: 0.5, flexWrap: 'wrap' }}>
+                    <LocationOnOutlined sx={{ fontSize: 14, color: '#1a4a80' }} />
+                    <Chip
+                      size="small"
+                      label={`${linkedProperty.name}${linkedProperty.city ? ` · ${linkedProperty.city}, ${linkedProperty.state}` : ` · ${linkedProperty.state}`}`}
+                      onClick={(e) => e.stopPropagation()}
+                      sx={{
+                        bgcolor: 'rgba(26,74,128,0.14)',
+                        color: '#1a4a80',
+                        fontWeight: 700,
+                        textTransform: 'none',
+                        maxWidth: 320,
+                        '& .MuiChip-label': { textOverflow: 'ellipsis', overflow: 'hidden' },
+                      }}
+                    />
+                  </Stack>
+                )}
                 {(parentWorkplan || parentInitiative) && (
                   <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mb: 0.5, flexWrap: 'wrap' }}>
                     <AccountTreeOutlined sx={{ fontSize: 14, color: 'text.secondary' }} />

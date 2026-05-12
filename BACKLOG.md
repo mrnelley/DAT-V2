@@ -9,6 +9,17 @@ Items deferred from the current build. Each is real work to schedule once the pr
 - [ ] Pipeline kanban view of advocacy targets (Cold → Warm → Engaged → Champion columns with drag-and-drop stage transitions)
 - [ ] Dashboard sharing — Dana can invite a viewer to her dashboard with a read-only or contribute role
 
+## Properties + Property Task Tracker (Jaime)
+
+- [ ] **Real geocoding** — replace the city-center coordinates in `src/api/properties.js` with precisely-geocoded lat/lng (Google / Mapbox geocoder, or one-time PostGIS pass at backend ingest)
+- [ ] **Validate flagged locations** — Southgate and St. Peters Apartments don't have addresses in the public dataset; both currently render with `coordsConfidence: 'low'` and a "Location flagged" chip. Confirm real addresses, then update.
+- [ ] **Validate Willow Ridge (Hershey) unit count** — the public data says inferred. JSON note: "Unit count estimated from comparable HDC communities. Requires internal validation."
+- [ ] **Task CRUD UI** — currently you can cycle task status by clicking the status chip, but there's no Add Task / Edit Task / Delete Task UI on the dashboard. Build an `EditTaskPanel` (slide-in, like `EditPriorityPanel`) with category/urgency/status/dueAt/propertyId picker.
+- [ ] **Map clustering at higher zooms** — `react-leaflet-cluster` when properties at the same address (Cambridge MD has 3) overlap. Currently we use ~300m offsets, which works at the demo zoom but breaks down zoomed in.
+- [ ] **Yardi integration for live counts** — replace synthetic `tasks` mock with real-time pulls from Yardi for vacancy / work-order counts. Salesforce migration prep already has a task on the BACKLOG inside the data layer.
+- [ ] **Per-property linked priorities surface** — when a property is selected, also show the priorities that have `propertyId` matching. Quick win, builds on the optional priority↔property link already in PriorityRow + EditPriorityPanel.
+- [ ] **Consolidate property data sources** — `src/api/properties.js` (real portfolio, used by the map) and `src/utils/calendarTokens.js` PROPERTY_OPTIONS (legacy fake Bay Area options, used by older priority/calendar dropdowns) should merge into a single source of truth.
+
 ## Per-persona cockpit deepening
 
 All seven persona cockpits exist as shells with flagship widgets running on inline mock data. Next round, each widget gets its own API/hook layer so the data flows end-to-end:

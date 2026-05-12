@@ -397,16 +397,17 @@ let DB = [
   },
   {
     id: 'pri_pm_003',
-    title: 'Riverbend move-in surge — keep day-one tickets at zero',
-    context: '14 new leases starting same day. Welcome packets, key audit, walkthroughs locked in.',
-    owner: STUB_OWNERS.jaime, teamId: 'prop_riverbend',
+    title: 'College Avenue final lease-up — close last 6 vacancies',
+    context: '58 of 64 units occupied. Application pipeline strong; goal is full occupancy before Q-end.',
+    owner: STUB_OWNERS.jaime, teamId: 'dept_property_mgmt',
+    propertyId: 'prop_college_ave', // OPTIONAL link — shows up as a chip on the row
     isCompany: false, isMine: true,
     measurement: MEASUREMENT.NUMBER,
-    start: 0, current: 0, target: 0, unit: ' day-one tickets',
+    start: 58, current: 58, target: 64, unit: ' units occupied',
     status: PRIORITY_STATUS.ON_TRACK,
-    dueAt: dayjs().add(7, 'day').toISOString(),
-    timeScope: TIME_SCOPE.WEEK,
-    heatmap: buildHeatmap(['nd','nd','nd','nd','nd','nd','nd','nd','nd','nd','nd','on','on']
+    dueAt: dayjs().add(28, 'day').toISOString(),
+    timeScope: TIME_SCOPE.MONTH,
+    heatmap: buildHeatmap(['nd','nd','nd','nd','nd','nd','on','on','on','on','on','on','on']
       .map((s) => ({on:'on_track',at:'at_risk',off:'off_track',nd:'no_data'}[s]))),
   },
 
@@ -502,7 +503,7 @@ let DB = [
   {
     id: 'pri_rs_001',
     title: 'Reduce mean time to first contact under 24h on new referrals',
-    context: 'Currently 31h. RSC scheduling SOP changes in pilot at North Park + Lakeside.',
+    context: 'Currently 31h. RSC scheduling SOP changes in pilot at Duke Manor + Heatherwoods.',
     owner: STUB_OWNERS.michael, teamId: 'dept_resident_services',
     isCompany: true, isMine: true,
     measurement: MEASUREMENT.NUMBER,
@@ -529,8 +530,8 @@ let DB = [
   },
   {
     id: 'pri_rs_003',
-    title: 'Stand up monthly needs assessment cadence at all 4 properties',
-    context: 'North Park live; Lakeside + Oak Grove kickoff this month; Riverbend after Phase 2 stabilizes.',
+    title: 'Stand up monthly needs assessment cadence at HDC-managed communities',
+    context: 'Duke Manor live; College Avenue + Heatherwoods kickoff this month; rest of portfolio rolling.',
     owner: STUB_OWNERS.michael, teamId: 'dept_resident_services',
     isCompany: true, isMine: true,
     measurement: MEASUREMENT.TASK,
