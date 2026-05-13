@@ -1,52 +1,36 @@
-import { Box, Card, Stack, Typography, Chip, LinearProgress, Divider } from '@mui/material';
+// Michael's Resident Services flagship widget — Referral queue + needs.
+// Seed data scrubbed for the executive scope demo. Tiles + category cards +
+// queue structure remain so the shape is visible; counts and rows are empty
+// until the resident-services intake system is wired.
+
+import { Box, Card, Stack, Typography, Chip, Divider } from '@mui/material';
 import VolunteerActivismOutlined from '@mui/icons-material/VolunteerActivismOutlined';
 import AccessTimeOutlined from '@mui/icons-material/AccessTimeOutlined';
 import FavoriteBorderOutlined from '@mui/icons-material/FavoriteBorderOutlined';
+import HourglassEmptyOutlined from '@mui/icons-material/HourglassEmptyOutlined';
 import { motion } from 'framer-motion';
 
 const STATS = {
-  activeCaseload: 87,
-  newThisWeek: 11,
-  avgFirstContactHours: 31,
+  activeCaseload: 0,
+  newThisWeek: 0,
+  avgFirstContactHours: null,
   targetHours: 24,
-  rscCount: 8,
-  rscCapacity: 12, // cases per RSC
+  rscCount: 0,
+  rscCapacity: 0,
 };
 
-// Each category has:
-//   color  — decorative (3px borderTop accent only; NOT used as text)
-//   text   — AA-safe text color for the count (≥4.5:1 on white)
-//   fill   — AA-safe filled-chip color (white text passes ≥4.5:1)
+// Categories remain so executives can see the taxonomy. Each card has an
+// AA-safe text color + AA-safe fill color (white-text passes 4.5:1 on fill).
 const CATEGORIES = [
-  { id: 'mental_health',  label: 'Mental Health',  color: '#1a4a80', text: '#1a4a80', fill: '#1a4a80', count: 23, trend: '+3 this wk' },
-  { id: 'food_security',  label: 'Food Security',  color: '#5eb8a8', text: '#1f5147', fill: '#2c6e63', count: 18, trend: '+2 this wk' },
-  { id: 'employment',     label: 'Employment',     color: '#f1ac49', text: '#8a5a14', fill: '#a06a14', count: 14, trend: 'flat' },
-  { id: 'childcare',      label: 'Childcare',      color: '#db534c', text: '#8a2b27', fill: '#a52a1f', count: 12, trend: '+2 this wk' },
-  { id: 'legal',          label: 'Legal',          color: '#5a6475', text: '#3f4a5c', fill: '#3f4a5c', count: 11, trend: '−1' },
-  { id: 'senior_support', label: 'Senior Support', color: '#006e5c', text: '#004d40', fill: '#006e5c', count: 9,  trend: '+1' },
+  { id: 'mental_health',  label: 'Mental Health',  color: '#1a4a80', text: '#1a4a80', fill: '#1a4a80', count: 0, trend: '—' },
+  { id: 'food_security',  label: 'Food Security',  color: '#5eb8a8', text: '#1f5147', fill: '#2c6e63', count: 0, trend: '—' },
+  { id: 'employment',     label: 'Employment',     color: '#f1ac49', text: '#8a5a14', fill: '#a06a14', count: 0, trend: '—' },
+  { id: 'childcare',      label: 'Childcare',      color: '#db534c', text: '#8a2b27', fill: '#a52a1f', count: 0, trend: '—' },
+  { id: 'legal',          label: 'Legal',          color: '#5a6475', text: '#3f4a5c', fill: '#3f4a5c', count: 0, trend: '—' },
+  { id: 'senior_support', label: 'Senior Support', color: '#006e5c', text: '#004d40', fill: '#006e5c', count: 0, trend: '—' },
 ];
 
-// PII-light — initials only.
-const REFERRALS = [
-  { id: 'r_001', resident: 'B.J.', property: 'North Park', category: 'mental_health', rsc: 'Tasha M.', daysOpen: 0, urgency: 'high', summary: 'Crisis response — partner referral coordinated.' },
-  { id: 'r_002', resident: 'M.O.', property: 'Lakeside', category: 'food_security', rsc: 'David L.', daysOpen: 1, urgency: 'medium', summary: 'CalFresh enrollment + Bay Area Food Bank delivery.' },
-  { id: 'r_003', resident: 'C.R.', property: 'Oak Grove', category: 'employment', rsc: 'Priya R.', daysOpen: 2, urgency: 'medium', summary: 'Job-readiness workshop sign-up + resume review.' },
-  { id: 'r_004', resident: 'A.T.', property: 'Riverbend', category: 'childcare', rsc: 'Marcus B.', daysOpen: 3, urgency: 'high', summary: 'Subsidized childcare voucher application in progress.' },
-  { id: 'r_005', resident: 'D.K.', property: 'North Park', category: 'legal', rsc: 'Tasha M.', daysOpen: 5, urgency: 'medium', summary: 'BayLegal referral — tenant rights consultation.' },
-  { id: 'r_006', resident: 'E.S.', property: 'Lakeside', category: 'senior_support', rsc: 'David L.', daysOpen: 4, urgency: 'low', summary: 'Senior Center transportation + meal program enrollment.' },
-  { id: 'r_007', resident: 'R.H.', property: 'Oak Grove', category: 'mental_health', rsc: 'Priya R.', daysOpen: 1, urgency: 'high', summary: 'Therapy referral — telehealth sliding scale.' },
-  { id: 'r_008', resident: 'S.V.', property: 'Lakeside', category: 'employment', rsc: 'David L.', daysOpen: 7, urgency: 'low', summary: 'Skill-building course enrollment + transit pass.' },
-];
-
-// Urgency renders as soft+dark badge (AA-safe text color on tinted bg).
-// `dot` is the AA-safe variant used for the row's left rail (3:1 non-text).
-const URGENCY = {
-  high:   { dot: '#a52a1f', soft: 'rgba(219,83,76,0.18)',  fg: '#8a2b27', label: 'High' },
-  medium: { dot: '#a06a14', soft: 'rgba(241,172,73,0.22)', fg: '#8a5a14', label: 'Medium' },
-  low:    { dot: '#5a6475', soft: 'rgba(90,100,117,0.14)', fg: '#3f4a5c', label: 'Low' },
-};
-
-const CATEGORY_BY_ID = Object.fromEntries(CATEGORIES.map((c) => [c.id, c]));
+const REFERRALS = [];
 
 function Tile({ icon, label, headline, sub, accent }) {
   return (
@@ -70,12 +54,32 @@ function Tile({ icon, label, headline, sub, accent }) {
   );
 }
 
+function PendingBanner() {
+  return (
+    <Box
+      sx={{
+        p: 1.5, mb: 2, borderRadius: 2,
+        border: '1px dashed', borderColor: 'divider',
+        bgcolor: 'rgba(7,44,94,0.03)',
+        display: 'flex', alignItems: 'center', gap: 1.5,
+      }}
+    >
+      <HourglassEmptyOutlined sx={{ color: 'text.secondary' }} />
+      <Box>
+        <Typography variant="body2" sx={{ fontWeight: 700 }}>
+          Awaiting Resident Services intake system
+        </Typography>
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          Caseload, RSC capacity, and the referral queue populate when needs
+          assessments start flowing in.
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
 export default function ReferralQueue() {
   const s = STATS;
-  const rscCapacityTotal = s.rscCount * s.rscCapacity;
-  const utilization = (s.activeCaseload / rscCapacityTotal) * 100;
-  const overTarget = s.avgFirstContactHours > s.targetHours;
-
   return (
     <Card sx={{ p: { xs: 2, md: 3 } }}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
@@ -86,11 +90,13 @@ export default function ReferralQueue() {
         <Chip label="Trauma-informed" size="small" sx={{ bgcolor: 'rgba(94,184,168,0.18)', color: 'secondary.dark' }} />
       </Stack>
 
+      <PendingBanner />
+
       <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, mb: 3 }}>
         <Tile icon={<VolunteerActivismOutlined sx={{ color: 'primary.main' }} />} label="Active caseload" headline={s.activeCaseload} sub={`${s.newThisWeek} new this week`} accent="#072c5e" />
-        <Tile icon={<AccessTimeOutlined sx={{ color: overTarget ? 'warning.dark' : 'success.dark' }} />} label="Avg first contact" headline={`${s.avgFirstContactHours}h`} sub={`target ${s.targetHours}h`} accent={overTarget ? '#f1ac49' : '#006e5c'} />
-        <Tile icon={<FavoriteBorderOutlined sx={{ color: 'secondary.dark' }} />} label="RSC team" headline={s.rscCount} sub={`avg ${(s.activeCaseload / s.rscCount).toFixed(1)} cases/RSC`} accent="#5eb8a8" />
-        <Tile icon={<VolunteerActivismOutlined sx={{ color: 'error.dark' }} />} label="Capacity used" headline={`${utilization.toFixed(0)}%`} sub={`of ${rscCapacityTotal}`} accent="#db534c" />
+        <Tile icon={<AccessTimeOutlined sx={{ color: '#3f4a5c' }} />} label="Avg first contact" headline="—" sub={`target ${s.targetHours}h`} accent="#3f4a5c" />
+        <Tile icon={<FavoriteBorderOutlined sx={{ color: 'secondary.dark' }} />} label="RSC team" headline={s.rscCount} sub="—" accent="#5eb8a8" />
+        <Tile icon={<VolunteerActivismOutlined sx={{ color: 'error.dark' }} />} label="Capacity used" headline="—" sub="—" accent="#db534c" />
       </Box>
 
       <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
@@ -117,54 +123,13 @@ export default function ReferralQueue() {
       <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
         Today's queue — resident initials only
       </Typography>
-      <Stack spacing={0.75}>
-        {REFERRALS.map((r) => {
-          const cat = CATEGORY_BY_ID[r.category];
-          return (
-            <Box
-              key={r.id}
-              component={motion.div}
-              whileHover={{ x: 2 }}
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: '40px 1fr 1fr 80px 80px 80px' },
-                alignItems: 'center', gap: 1.5,
-                p: 1.5, borderRadius: 2,
-                border: '1px solid', borderColor: 'divider',
-                borderLeft: `4px solid ${URGENCY[r.urgency].dot}`,
-              }}
-            >
-              <Box sx={{
-                width: 36, height: 36, borderRadius: '50%',
-                bgcolor: 'rgba(7,44,94,0.08)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 700, color: 'primary.main',
-              }}>
-                {r.resident}
-              </Box>
-              <Box>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>{r.summary}</Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>{r.property} · RSC: {r.rsc}</Typography>
-              </Box>
-              <Chip size="small" label={cat.label} sx={{ bgcolor: cat.fill, color: 'common.white', justifySelf: 'flex-start', fontWeight: 700 }} />
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>Days open</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 700 }}>{r.daysOpen}d</Typography>
-              </Box>
-              <Chip
-                size="small"
-                label={URGENCY[r.urgency].label}
-                sx={{
-                  bgcolor: URGENCY[r.urgency].soft,
-                  color: URGENCY[r.urgency].fg,
-                  justifySelf: 'flex-start',
-                  fontWeight: 700,
-                }}
-              />
-            </Box>
-          );
-        })}
-      </Stack>
+      {REFERRALS.length === 0 && (
+        <Box sx={{ p: 3, borderRadius: 2, border: '1px dashed', borderColor: 'divider', textAlign: 'center' }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            No active referrals in the queue.
+          </Typography>
+        </Box>
+      )}
 
       <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(94,184,168,0.08)', borderRadius: 2, borderLeft: '3px solid', borderColor: 'secondary.main' }}>
         <Typography variant="caption" sx={{ color: 'secondary.dark' }}>

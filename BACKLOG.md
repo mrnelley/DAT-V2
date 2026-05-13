@@ -20,6 +20,17 @@ Items deferred from the current build. Each is real work to schedule once the pr
 - [ ] **Per-property linked priorities surface** — when a property is selected, also show the priorities that have `propertyId` matching. Quick win, builds on the optional priority↔property link already in PriorityRow + EditPriorityPanel.
 - [ ] **Consolidate property data sources** — `src/api/properties.js` (real portfolio, used by the map) and `src/utils/calendarTokens.js` PROPERTY_OPTIONS (legacy fake Bay Area options, used by older priority/calendar dropdowns) should merge into a single source of truth.
 
+## Compass Quarterly Commitments — Curb Appeal Checklist
+
+- [ ] **Teams Adaptive Card integration** — wire the actual `/checklists/curb-appeal/:propertyId` endpoint into a Teams workflow that posts the Adaptive Card to each community manager at the start of each quarter (mirrors the screenshot). Card payload should include propertyId + quarter so the Open Checklist button deep-links correctly.
+- [ ] **Community manager assignment** — currently the form hardcodes the current user as the submitter. Real flow: each property has a `communityManager` field on the Property record; the Adaptive Card is sent to that user; the form's `submittedBy` comes from auth context but the property record establishes ownership.
+- [ ] **Reminder cadence** — Teams workflow nudges at day 60 / 75 / 80 of the quarter if a property's checklist is `not_started` or `draft`.
+- [ ] **Photo attachments** — each flagged-for-correction item should support a photo upload (real-estate ops staple). Build a photo field on the rating shape; render thumbnails inline.
+- [ ] **Auto-create maintenance task on "Needs Correction"** — when a community manager submits with flagged items + correction dates, propertyTasks should auto-create a Maintenance task per flag, linked back to the checklist. Closes the loop between attestation and tracked work.
+- [ ] **Historical view** — show prior quarters' checklists for a property so trends (recurring issues, improvement over time) surface. Currently we only render the current quarter.
+- [ ] **Multiple quarterly commitments** — design `/checklists/:type/...` to accept other quarterly commitments later (fire inspection, fair-housing audit, etc.) without rebuilding the form scaffolding. Generalize TEMPLATE + form.
+- [ ] **Score / pass rate** — emit a derived "curb appeal score" per property (% good of non-N/A items) so Jaime can trend properties across quarters.
+
 ## Per-persona cockpit deepening
 
 All seven persona cockpits exist as shells with flagship widgets running on inline mock data. Next round, each widget gets its own API/hook layer so the data flows end-to-end:

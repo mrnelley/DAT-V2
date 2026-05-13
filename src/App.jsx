@@ -18,6 +18,8 @@ import InitiativesPage from './components/initiatives/InitiativesPage';
 import InitiativeDetailPage from './components/initiatives/InitiativeDetailPage';
 import WorkplansPage from './components/workplans/WorkplansPage';
 import WorkplanDetailPage from './components/workplans/WorkplanDetailPage';
+import CurbAppealChecklistsHub from './components/checklists/CurbAppealChecklistsHub';
+import CurbAppealChecklistPage from './components/checklists/CurbAppealChecklistPage';
 import ActionItemsPage from './components/action-items/ActionItemsPage';
 import LearnPage from './components/shared/LearnPage';
 import AdminPage from './components/shared/AdminPage';
@@ -45,6 +47,8 @@ export default function App() {
                       <Route path="initiatives/:id" element={<InitiativeDetailPage />} />
                       <Route path="workplans" element={<WorkplansPage />} />
                       <Route path="workplans/:id" element={<WorkplanDetailPage />} />
+                      <Route path="checklists/curb-appeal" element={<CurbAppealChecklistsHub />} />
+                      <Route path="checklists/curb-appeal/:propertyId" element={<CurbAppealChecklistPage />} />
                       <Route path="huddles" element={<HuddlesPage />} />
                       <Route path="huddles/:id" element={<HuddlesPage />} />
                       <Route path="stucks" element={<StucksPage />} />

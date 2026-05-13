@@ -4,16 +4,9 @@ import Close from '@mui/icons-material/Close';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-const STUB_HUDDLES = {
-  today: [
-    { id: 'leadership-daily', name: 'Leadership Daily', recurrence: 'Every weekday' },
-    { id: 'ops-standup', name: 'Operations Standup', recurrence: 'Mon, Wed, Fri' },
-  ],
-  future: [
-    { id: 'q-review', name: 'Quarterly Review', recurrence: 'Every quarter' },
-    { id: 'all-hands', name: 'All Hands', recurrence: 'Monthly' },
-  ],
-};
+// Seed data scrubbed for the executive scope demo. Wire to a real
+// `useHuddles()` query when the huddles module gains its data layer.
+const STUB_HUDDLES = { today: [], future: [] };
 
 function HuddleList({ items, onSelect }) {
   return items.map((huddle) => (
@@ -91,14 +84,26 @@ export default function HuddleSidePopout({ open, leftOffset = 64, onClose }) {
               <Typography variant="overline" sx={{ pl: 1, color: 'text.secondary' }}>
                 Today
               </Typography>
-              <HuddleList items={STUB_HUDDLES.today} onSelect={handleSelect} />
+              {STUB_HUDDLES.today.length === 0 ? (
+                <Typography variant="caption" sx={{ pl: 1, color: 'text.secondary', display: 'block', mb: 1 }}>
+                  No huddles scheduled.
+                </Typography>
+              ) : (
+                <HuddleList items={STUB_HUDDLES.today} onSelect={handleSelect} />
+              )}
               <Typography
                 variant="overline"
                 sx={{ pl: 1, mt: 2, display: 'block', color: 'text.secondary' }}
               >
                 Future
               </Typography>
-              <HuddleList items={STUB_HUDDLES.future} onSelect={handleSelect} />
+              {STUB_HUDDLES.future.length === 0 ? (
+                <Typography variant="caption" sx={{ pl: 1, color: 'text.secondary', display: 'block' }}>
+                  No huddles scheduled.
+                </Typography>
+              ) : (
+                <HuddleList items={STUB_HUDDLES.future} onSelect={handleSelect} />
+              )}
             </Box>
           </Box>
         </motion.div>

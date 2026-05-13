@@ -32,6 +32,11 @@ import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
 import { useProperties } from '../../../hooks/useProperties';
 import { usePropertyTasks, useUpdateTask } from '../../../hooks/usePropertyTasks';
+import { useChecklist, useChecklistStats } from '../../../hooks/useChecklists';
+import ChecklistStatusChip from '../../checklists/ChecklistStatusChip';
+import { Link as RouterLink } from 'react-router-dom';
+import ChecklistOutlined from '@mui/icons-material/ChecklistOutlined';
+import { currentQuarter, currentYear, TOTAL_ITEM_COUNT, countRated } from '../../../api/curbAppealChecklists';
 import {
   CATEGORY_META, STATUS_META, STATUS_CYCLE, URGENCY_META,
   computeHealth, HEALTH_META, summarize,
@@ -191,6 +196,9 @@ function TaskRow({ task, propertyName, onCycleStatus, dense = false }) {
 function PropertyPanel({ property, tasks, summary, onClose, onCycleStatus }) {
   const health = computeHealth(tasks);
   const healthMeta = HEALTH_META[health];
+  const checklistQ = useChecklist({ propertyId: property.id, quarter: currentQuarter(), year: currentYear() });
+  const checklist = checklistQ.data;
+  const checklistCompleted = checklist ? countRated(checklist) : 0;
   const grouped = useMemo(() => {
     const map = {};
     tasks.forEach((t) => {
@@ -241,6 +249,39 @@ function PropertyPanel({ property, tasks, summary, onClose, onCycleStatus }) {
         <Mini label="Urgent" value={summary.high} tone={summary.high > 0 ? 'high' : 'neutral'} />
         <Mini label="Overdue" value={summary.overdue} tone={summary.overdue > 0 ? 'high' : 'neutral'} />
       </Box>
+
+      {/* Quarterly Curb Appeal Checklist */}
+      {checklist && (
+        <Box
+          sx={{
+            p: 1.25, mb: 2, borderRadius: 2,
+            border: '1px solid', borderColor: 'divider',
+            bgcolor: 'rgba(7,44,94,0.03)',
+          }}
+        >
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+            <ChecklistOutlined sx={{ fontSize: 16, color: 'primary.main' }} />
+            <Typography variant="overline" sx={{ color: 'text.secondary', flex: 1 }}>
+              Q{currentQuarter()} {currentYear()} Curb Appeal Checklist
+            </Typography>
+            <ChecklistStatusChip status={checklist.status} />
+          </Stack>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 0.75 }}>
+            {checklistCompleted} of {TOTAL_ITEM_COUNT} items rated
+            {checklist.submittedBy ? ` · ${checklist.submittedBy.name}` : ''}
+          </Typography>
+          <Button
+            component={RouterLink}
+            to={`/checklists/curb-appeal/${property.id}`}
+            size="small"
+            variant="outlined"
+            fullWidth
+            startIcon={<ChecklistOutlined fontSize="small" />}
+          >
+            Open quarterly checklist
+          </Button>
+        </Box>
+      )}
 
       <Divider sx={{ my: 1.5 }} />
 
@@ -324,6 +365,7 @@ export default function PropertiesMap() {
   const propertiesQ = useProperties();
   const tasksQ = usePropertyTasks();
   const updateTask = useUpdateTask();
+  const checklistStatsQ = useChecklistStats();
 
   const [stateFilter, setStateFilter] = useState('all');
   const [mgmtFilter, setMgmtFilter] = useState('all');
@@ -599,6 +641,46 @@ export default function PropertiesMap() {
             {portfolioWide.map((t) => <TaskRow key={t.id} task={t} onCycleStatus={handleCycle} />)}
           </Stack>
         )}
+      </Box>
+
+      {/* QUARTERLY CURB APPEAL BANNER */}
+      <Divider />
+      <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={2}
+          alignItems={{ md: 'center' }}
+          justifyContent="space-between"
+          sx={{
+            p: 2, borderRadius: 2,
+            bgcolor: 'rgba(7,44,94,0.04)',
+            border: '1px solid', borderColor: 'divider',
+          }}
+        >
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <ChecklistOutlined sx={{ color: 'primary.main', fontSize: 32 }} />
+            <Box>
+              <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
+                Compass Quarterly Commitment
+              </Typography>
+              <Typography variant="h3">Curb Appeal Checklists · Q{currentQuarter()} {currentYear()}</Typography>
+              {checklistStatsQ.data && (
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  {checklistStatsQ.data.approved ?? 0} approved · {checklistStatsQ.data.submitted ?? 0} awaiting your review · {checklistStatsQ.data.returned ?? 0} returned · {(checklistStatsQ.data.draft ?? 0) + (checklistStatsQ.data.not_started ?? 0)} not yet submitted
+                </Typography>
+              )}
+            </Box>
+          </Stack>
+          <Button
+            component={RouterLink}
+            to="/checklists/curb-appeal"
+            variant="contained"
+            color="primary"
+            endIcon={<OpenInNewOutlined fontSize="small" />}
+          >
+            Open review hub
+          </Button>
+        </Stack>
       </Box>
 
       {/* TRIAGE QUEUE */}
