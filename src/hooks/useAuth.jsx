@@ -3,26 +3,25 @@ import { DEFAULT_USER_ID, USERS, getUser } from '../api/users';
 
 const AuthContext = createContext(null);
 
+// Demo mode: the app always boots into Dana's dashboard. Switching personas
+// from the TopBar still works during a session, but a refresh / new tab / new
+// browser brings the viewer back to Dana — predictable starting state for
+// executive walk-throughs. Any old persona selection from a prior session is
+// cleared on mount so stale localStorage values don't leak in.
 const STORAGE_KEY = 'hdc_compass.activeUserId';
 
-function readStoredUserId() {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY) || DEFAULT_USER_ID;
-  } catch {
-    return DEFAULT_USER_ID;
-  }
-}
-
 export function AuthProvider({ children }) {
-  const [userId, setUserId] = useState(readStoredUserId);
+  const [userId, setUserId] = useState(DEFAULT_USER_ID);
 
+  // Clear any persisted persona selection from prior sessions so refresh
+  // always returns to Dana.
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, userId);
+      window.localStorage.removeItem(STORAGE_KEY);
     } catch {
       /* no-op */
     }
-  }, [userId]);
+  }, []);
 
   const switchUser = useCallback((nextId) => {
     setUserId(nextId);
